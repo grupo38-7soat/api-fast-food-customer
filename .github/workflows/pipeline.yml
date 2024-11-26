@@ -88,30 +88,31 @@ jobs:
         run: |
           aws eks --region ${{ secrets.AWS_REGION }} update-kubeconfig --name $CLUSTER_NAME
 
-      # Etapa 4: Substituir placeholders no arquivo Kubernetes (deployment.yaml)
-      - name: Replace placeholders in Kubernetes deployment
+      # Etapa 4: Definir as variáveis de ambiente
+      - name: Set environment variables
         run: |
-          IMAGE_NAME="${{ steps.login-ecr.outputs.registry }}/$REPO_NAME:latest"
-          REGION="${{ secrets.AWS_REGION }}"
-          sed -i "s|<repository-name>|$REPO_NAME|g" k8s/deployment.yaml
-          sed -i "s|<your-account>|${{ steps.login-ecr.outputs.registry }}|g" k8s/deployment.yaml
-          sed -i "s|<aws-region>|$REGION|g" k8s/deployment.yaml
-          cat k8s/deployment.yaml
+          echo "REPO_NAME=${GITHUB_REPOSITORY##*/}" >> $GITHUB_ENV
+          echo "AWS_REGION=${{ secrets.AWS_REGION }}" >> $GITHUB_ENV
+          echo "ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}" >> $GITHUB_ENV
 
-      # Etapa 5: Substituir placeholders no arquivo Kubernetes (service.yaml)
-      - name: Replace placeholders in Kubernetes service
+      # Etapa 5: Substituir variáveis nos arquivos Kubernetes
+      - name: Substitute variables in deployment.yaml
         run: |
-          sed -i "s|<repository-name>|$REPO_NAME|g" k8s/service.yaml
-          cat k8s/service.yaml
+          envsubst < k8s/deployment.yaml > k8s/deployment-final.yaml
+          cat k8s/deployment-final.yaml
 
-      # Etapa 6: Aplicar Kubernetes Deployment e Service
+      - name: Substitute variables in service.yaml
+        run: |
+          envsubst < k8s/service.yaml > k8s/service-final.yaml
+          cat k8s/service-final.yaml
+
+      # Etapa 6: Aplicar Kubernetes manifests
       - name: Apply Kubernetes manifests
         run: |
-          ls -la k8s
-          kubectl apply -f k8s/deployment.yaml  # Aplicar o deployment.yaml
-          kubectl apply -f k8s/service.yaml     # Aplicar o service.yaml
+          kubectl apply -f k8s/deployment-final.yaml
+          kubectl apply -f k8s/service-final.yaml
 
       # Etapa 7: Verificar o status do Deployment
       - name: Verify Deployment
         run: |
-          kubectl rollout status deployment/$REPO_NAME
+          kubectl get all

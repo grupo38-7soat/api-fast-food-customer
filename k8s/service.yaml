@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: <repository-name>-service
+  name: ${REPO_NAME}-service
 spec:
   type: LoadBalancer
   selector:
-    app: <repository-name>
+    app: ${REPO_NAME}
   ports:
     - protocol: TCP
       port: 3000
