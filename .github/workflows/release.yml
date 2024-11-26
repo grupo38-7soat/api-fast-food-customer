@@ -1,0 +1,58 @@
+name: Release
+
+on:
+  workflow_run:
+    workflows:
+      - Push Docker Image to AWS ECR # Nome do workflow do arquivo pipeline.yml
+    types:
+      - completed
+
+jobs:
+  release:
+    name: Release Application
+    runs-on: ubuntu-latest
+
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      # Etapa 1: Checkout do código
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Etapa 2: Configurar AWS CLI
+      - name: Configure AWS CLI
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      # Etapa 3: Configurar kubectl para interagir com o EKS
+      - name: Configure kubectl
+        run: |
+          aws eks --region ${{ secrets.AWS_REGION }} update-kubeconfig --name $CLUSTER_NAME
+
+      # Etapa 4: Substituir placeholders no arquivo Kubernetes (deployment.yaml)
+      - name: Replace placeholders in Kubernetes deployment
+        run: |
+          IMAGE_NAME="${{ steps.login-ecr.outputs.registry }}/$REPO_NAME:latest"
+          REGION="${{ secrets.AWS_REGION }}"
+          sed -i "s|<repository-name>|$REPO_NAME|g" k8s/deployment.yaml
+          sed -i "s|<your-account>|${{ steps.login-ecr.outputs.registry }}|g" k8s/deployment.yaml
+          sed -i "s|<aws-region>|$REGION|g" k8s/deployment.yaml
+
+      # Etapa 5: Substituir placeholders no arquivo Kubernetes (service.yaml)
+      - name: Replace placeholders in Kubernetes service
+        run: |
+          sed -i "s|<repository-name>|$REPO_NAME|g" k8s/service.yaml
+
+      # Etapa 6: Aplicar Kubernetes Deployment e Service
+      - name: Apply Kubernetes manifests
+        run: |
+          kubectl apply -f k8s/deployment.yaml  # Aplicar o deployment.yaml
+          kubectl apply -f k8s/service.yaml     # Aplicar o service.yaml
+
+      # Etapa 7: Verificar o status do Deployment
+      - name: Verify Deployment
+        run: |
+          kubectl rollout status deployment/$REPO_NAME
