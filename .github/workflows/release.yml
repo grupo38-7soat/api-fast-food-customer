@@ -11,6 +11,8 @@ jobs:
   release:
     name: Release Application
     runs-on: ubuntu-latest
+    env:
+      CLUSTER_NAME: "my-cluster"  # Definindo o nome do cluster
 
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
