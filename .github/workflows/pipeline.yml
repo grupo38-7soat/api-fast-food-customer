@@ -58,8 +58,8 @@ jobs:
         run: |
           docker push ${{ steps.login-ecr.outputs.registry }}/$REPO_NAME:latest
 
-      # Etapa 7: Verificar se o EKS já foi criado
-      - name: Check if EKS cluster exists
-        run: |
-          aws eks describe-cluster --name $CLUSTER_NAME --region ${{ secrets.AWS_REGION }} || exit 1
-        continue-on-error: false  # Caso o cluster não exista, o workflow falha aqui
+#      # Etapa 7: Verificar se o EKS já foi criado
+#      - name: Check if EKS cluster exists
+#        run: |
+#          aws eks describe-cluster --name $CLUSTER_NAME --region ${{ secrets.AWS_REGION }} || exit 1
+#        continue-on-error: false  # Caso o cluster não exista, o workflow falha aqui
