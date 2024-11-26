@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: <repository-name>
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: <repository-name>
+  template:
+    metadata:
+      labels:
+        app: <repository-name>
+    spec:
+      containers:
+      - name: <repository-name>
+        image: <your-account>.dkr.ecr.<aws-region>.amazonaws.com/<repository-name>:latest
+        ports:
+        - containerPort: 3000
