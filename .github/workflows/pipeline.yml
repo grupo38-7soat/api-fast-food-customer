@@ -4,7 +4,7 @@ on:
       - main
 
 env:
-  CLUSTER_NAME: "my-cluster"  # Nome do cluster
+  CLUSTER_NAME: "infra-tech-challenge"  # Nome do cluster EKS
 
 jobs:
   build:
