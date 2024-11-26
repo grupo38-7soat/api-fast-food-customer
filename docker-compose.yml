@@ -3,10 +3,10 @@ version: '3.8'
 services:
   api:
     build: .
-    image: api-fast-food-customer-image
+    image: api-fast-food-customer
     container_name: api-fast-food-customer-container
     ports:
-      - "8080:8080"
+      - "3000:3000"
     volumes:
       - .:/app
     environment:

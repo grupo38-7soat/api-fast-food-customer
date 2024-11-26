@@ -10,7 +10,7 @@ app = Flask(__name__)
 
 class ApiService(object):
     HOST = '0.0.0.0'
-    PORT = 8080
+    PORT = 3000
 
     def __init__(self):
         self.api = Api(app,
