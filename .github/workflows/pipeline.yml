@@ -54,28 +54,19 @@ jobs:
           docker build -t $REPO_NAME:latest .
           docker tag $REPO_NAME:latest ${{ steps.login-ecr.outputs.registry }}/$REPO_NAME:latest
 
-      # Etapa 6: Verificar se a imagem já existe no ECR
+      # Etapa 6: Criar o repositório no ECR se não existir
       - name: Check if image exists in ECR
         id: check-image
         run: |
-          aws ecr describe-images --repository-name $REPO_NAME --image-ids imageTag=latest || echo "Image does not exist"
+          aws ecr describe-images --repository-name $REPO_NAME --image-ids imageTag=latest || aws ecr create-repository --repository-name $REPO_NAME
 
-      # Etapa 7: Condicional para construir a imagem Docker e enviar para o ECR
-      - name: Build and Push Docker Image if not exists
-        if: steps.check-image.outputs.result == 'Image does not exist'
-        run: |
-          echo "Image does not exist, creating repository and pushing image"
-          aws ecr create-repository --repository-name $REPO_NAME
-          docker push $ECR_REGISTRY/$REPO_NAME:latest
-
-      # Etapa 8: Forçar um push caso a imagem já exista (opcional)
+      # Etapa 7: Push da imagem Docker para o ECR
       - name: Force Push Docker Image if exists
         if: steps.check-image.outputs.result != 'Image does not exist'
         run: |
-          echo "Image already exists, forcing push"
           docker push $ECR_REGISTRY/$REPO_NAME:latest
 
-      # Etapa 9: Verificar se o EKS já foi criado
+      # Etapa 8: Verificar se o EKS já foi criado
       - name: Check if EKS cluster exists
         run: |
           aws eks describe-cluster --name $CLUSTER_NAME --region ${{ secrets.AWS_REGION }} || exit 1
