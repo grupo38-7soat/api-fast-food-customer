@@ -67,6 +67,7 @@ jobs:
         if: steps.check-image.outputs.result != 'Image does not exist'
         run: |
           docker push ${{ steps.login-ecr.outputs.registry }}/$REPO_NAME:latest
+          echo "::set-output name=registry::${{ steps.login-ecr.outputs.registry }}"
 
       # Etapa 8: Verificar se o EKS já foi criado
       - name: Check if EKS cluster exists
@@ -92,19 +93,24 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      # Etapa 3: Configurar kubectl para interagir com o EKS
+      # Etapa 3: Autenticar no Amazon ECR
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # Etapa 4: Configurar kubectl para interagir com o EKS
       - name: Configure kubectl
         run: |
           aws eks --region ${{ secrets.AWS_REGION }} update-kubeconfig --name $CLUSTER_NAME
 
-      # Etapa 4: Definir as variáveis de ambiente
+      # Etapa 5: Definir as variáveis de ambiente
       - name: Set environment variables
         run: |
           echo "REPO_NAME=${GITHUB_REPOSITORY##*/}" >> $GITHUB_ENV
           echo "AWS_REGION=${{ secrets.AWS_REGION }}" >> $GITHUB_ENV
           echo "ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}" >> $GITHUB_ENV
 
-      # Etapa 5: Substituir variáveis nos arquivos Kubernetes
+      # Etapa 6: Substituir variáveis nos arquivos Kubernetes
       - name: Substitute variables in deployment.yaml
         run: |
           envsubst < k8s/deployment.yaml > k8s/deployment-final.yaml
@@ -115,13 +121,13 @@ jobs:
           envsubst < k8s/service.yaml > k8s/service-final.yaml
           cat k8s/service-final.yaml
 
-      # Etapa 6: Aplicar Kubernetes manifests
+      # Etapa 7: Aplicar Kubernetes manifests
       - name: Apply Kubernetes manifests
         run: |
           kubectl apply -f k8s/deployment-final.yaml
           kubectl apply -f k8s/service-final.yaml
 
-      # Etapa 7: Verificar o status do Deployment
+      # Etapa 8: Verificar o status do Deployment
       - name: Verify Deployment
         run: |
           kubectl get all
