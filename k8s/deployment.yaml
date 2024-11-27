@@ -17,3 +17,10 @@ spec:
         image: ${ECR_REGISTRY}/${REPO_NAME}:latest
         ports:
         - containerPort: 3000
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
