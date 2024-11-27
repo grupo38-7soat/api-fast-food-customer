@@ -56,10 +56,11 @@ jobs:
           docker tag $REPO_NAME:latest ${{ steps.login-ecr.outputs.registry }}/$REPO_NAME:latest
 
       # Etapa 6: Criar o repositório no ECR se não existir
-      - name: Check if image exists in ECR
+      - name: Create ECR repository if it doesn't exist
         id: check-image
         run: |
-          aws ecr describe-images --repository-name $REPO_NAME --image-ids imageTag=latest || aws ecr create-repository --repository-name $REPO_NAME
+          aws ecr create-repository --repository-name $REPO_NAME
+        continue-on-error: true
 
       # Etapa 7: Push da imagem Docker para o ECR
       - name: Force Push Docker Image if exists
