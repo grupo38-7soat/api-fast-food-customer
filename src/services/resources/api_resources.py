@@ -1,18 +1,28 @@
-from loguru import logger
-from functools import partial
 from flask_restx import Namespace, Resource, fields
+from loguru import logger
 
-name_ns = Namespace(name='Nome', description='Descricao')
+crud_ns = Namespace(name='CRUD', description='CRUD operations')
 
+@crud_ns.route('/create')
+class CreateResource(Resource):
+    def post(self):
+        logger.info('Create resource')
+        return {'message': 'Create resource'}, 201
 
-@name_ns.route('/rota')
-class ApiResource(Resource):
-    @name_ns.response(200, 'Success', name_ns.model('Validate', {
-        'value': fields.String
-    }))
-    @name_ns.response(500, 'Internal Server Error', name_ns.model('InternalServerError', {
-        'message': fields.String
-    }))
+@crud_ns.route('/read')
+class ReadResource(Resource):
     def get(self):
-        logger.info('api resource')
-        return 'data'
+        logger.info('Read resource')
+        return {'message': 'Read resource'}, 200
+
+@crud_ns.route('/update')
+class UpdateResource(Resource):
+    def put(self):
+        logger.info('Update resource')
+        return {'message': 'Update resource'}, 200
+
+@crud_ns.route('/delete')
+class DeleteResource(Resource):
+    def delete(self):
+        logger.info('Delete resource')
+        return {'message': 'Delete resource'}, 200
