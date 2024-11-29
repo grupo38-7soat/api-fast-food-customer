@@ -2,12 +2,14 @@ on:
   push:
     branches:
       - main
+      - release
 
 env:
   CLUSTER_NAME: "infra-tech-challenge"  # Nome do cluster EKS
 
 jobs:
   build:
+    name: Build and Test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -20,8 +22,44 @@ jobs:
           python -m pip install --upgrade pip
           if [ -f src/requirements.txt ]; then pip install -r src/requirements.txt; fi
 
+      # Rodar os testes e gerar o relatório de cobertura
+      - name: Run tests and generate coverage report
+        run: |
+          coverage3 run -m pytest
+          coverage3 xml
+
+      # Instalar o SonarQube Scanner
+      - name: Set up SonarQube Scanner
+        uses: SonarSource/sonarcloud-github-action@v2
+        with:
+          sonar-token: ${{ secrets.SONAR_TOKEN }}
+
+      # Rodar a análise do SonarQube
+      - name: Run SonarQube analysis
+        run: |
+          sonar-scanner
+
+      # Aguardar o resultado da análise e obter o status da qualidade
+      - name: Check SonarQube quality gate status
+        run: |
+          STATUS=$(curl -s -u ${{ secrets.SONAR_TOKEN }} "${{ secrets.SONAR_URL }}/api/qualitygates/project_status?projectKey=$GITHUB_REPOSITORY" | jq -r .projectStatus.status)
+
+          if [[ "$STATUS" != "OK" ]]; then
+            echo "SonarQube Quality Gate failed: Quality is below the threshold!";
+            exit 1;
+          fi
+
+          # Verificar a pontuação de qualidade se necessário
+          SCORE=$(curl -s -u ${{ secrets.SONAR_TOKEN }} "${{ secrets.SONAR_URL }}/api/measures/component?component=$GITHUB_REPOSITORY&metricKeys=coverage" | jq -r .component.measures[0].value)
+
+          if (( $(echo "$SCORE < 80" | bc -l) )); then
+            echo "SonarQube Quality Gate failed: Quality score is less than 80%!";
+            exit 1;
+          fi
+          echo "SonarQube quality score is OK"
+
   build-and-push-ecr:
-    name: Build and Push Docker Image to AWS ECR
+    name: Push Docker Image to AWS ECR
     runs-on: ubuntu-latest
     needs: build
 
