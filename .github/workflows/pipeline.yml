@@ -51,8 +51,8 @@ jobs:
           fi
 
           # Verificar a pontuação de qualidade se necessário
-          SCORE=$(curl -s -u ${{ secrets.SONAR_TOKEN }} "${{ secrets.SONAR_URL }}/api/measures/component?component=$GITHUB_REPOSITORY&metricKeys=coverage" | jq -r .component.measures[0].value)
-
+          SCORE=$(curl -s -u ${{ secrets.SONAR_TOKEN }} "${{ secrets.SONAR_URL }}/api/measures/component?component=$REPO_NAME&metricKeys=coverage" | jq -r .component.measures[0].value)
+          echo "SonarQube quality score: $SCORE"
           if (( $(echo "$SCORE < 1" | bc -l) )); then
             echo "SonarQube Quality Gate failed: Quality score is less than 80%!";
             exit 1;
