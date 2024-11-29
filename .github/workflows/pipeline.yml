@@ -40,6 +40,7 @@ jobs:
       - name: Check SonarQube quality gate status
         run: |
           STATUS=$(curl -s -u ${{ secrets.SONAR_TOKEN }} "${{ secrets.SONAR_URL }}/api/qualitygates/project_status?projectKey=$GITHUB_REPOSITORY" | jq -r .projectStatus.status)
+          echo "${{ secrets.SONAR_URL }}/api/qualitygates/project_status?projectKey=$GITHUB_REPOSITORY"
           echo "SonarQube Quality Gate  status: $STATUS"
           if [[ "$STATUS" != "OK" ]]; then
             echo "SonarQube Quality Gate failed: Quality is below the threshold!";
