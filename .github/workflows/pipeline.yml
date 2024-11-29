@@ -36,11 +36,6 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}  # analysis token associated to your project
           SONAR_HOST_URL: ${{ secrets.SONAR_URL }}
 
-      # Rodar a análise do SonarQube
-      - name: Run SonarQube analysis
-        run: |
-          sonar-scanner
-
       # Aguardar o resultado da análise e obter o status da qualidade
       - name: Check SonarQube quality gate status
         run: |
