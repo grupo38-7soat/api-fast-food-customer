@@ -26,6 +26,7 @@ jobs:
       # Rodar os testes e gerar o relatório de cobertura
       - name: Run tests and generate coverage report
         run: |
+          ls
           coverage3 run -m pytest
           coverage3 xml
 
