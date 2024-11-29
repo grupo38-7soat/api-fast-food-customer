@@ -32,9 +32,10 @@ jobs:
       # Instalar o SonarQube Scanner
       - name: Set up SonarQube Scanner
         uses: SonarSource/sonarcloud-github-action@v2
-#        with:
-#          organization: "infrastructure-tech-challenge"
-#          token: ${{ secrets.SONAR_TOKEN }}
+        with:
+          projectBaseDir: .
+          env:
+            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
       # Rodar a análise do SonarQube
       - name: Run SonarQube analysis
