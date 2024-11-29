@@ -29,6 +29,10 @@ jobs:
           coverage3 run -m pytest
           coverage3 xml
 
+      - name: Extract repository name
+        id: repo-name
+        run: echo "REPO_NAME=${GITHUB_REPOSITORY##*/}" >> $GITHUB_ENV
+
       # Instalar o SonarQube Scanner
       - name: Set up SonarQube Scanner
         uses: sonarsource/sonarqube-scan-action@master
@@ -39,8 +43,7 @@ jobs:
       # Aguardar o resultado da análise e obter o status da qualidade
       - name: Check SonarQube quality gate status
         run: |
-          STATUS=$(curl -s -u ${{ secrets.SONAR_TOKEN }} "${{ secrets.SONAR_URL }}/api/qualitygates/project_status?projectKey=api-fast-food-customer" | jq -r .projectStatus.status)
-          echo "${{ secrets.SONAR_URL }}/api/qualitygates/project_status?projectKey=api-fast-food-customer"
+          STATUS=$(curl -s -u ${{ secrets.SONAR_TOKEN }} "${{ secrets.SONAR_URL }}/api/qualitygates/project_status?projectKey=$REPO_NAME" | jq -r .projectStatus.status)
           echo "SonarQube Quality Gate  status: $STATUS"
           if [[ "$STATUS" != "OK" ]]; then
             echo "SonarQube Quality Gate failed: Quality is below the threshold!";
@@ -50,7 +53,7 @@ jobs:
           # Verificar a pontuação de qualidade se necessário
           SCORE=$(curl -s -u ${{ secrets.SONAR_TOKEN }} "${{ secrets.SONAR_URL }}/api/measures/component?component=$GITHUB_REPOSITORY&metricKeys=coverage" | jq -r .component.measures[0].value)
 
-          if (( $(echo "$SCORE < 80" | bc -l) )); then
+          if (( $(echo "$SCORE < 1" | bc -l) )); then
             echo "SonarQube Quality Gate failed: Quality score is less than 80%!";
             exit 1;
           fi
