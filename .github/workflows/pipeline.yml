@@ -20,7 +20,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          if [ -f src/requirements.txt ]; then pip install -r src/requirements.txt; fi
+          pip install -r src/requirements.txt
           pip install coverage pytest
 
       # Rodar os testes e gerar o relatório de cobertura
