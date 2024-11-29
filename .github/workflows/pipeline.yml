@@ -31,11 +31,10 @@ jobs:
 
       # Instalar o SonarQube Scanner
       - name: Set up SonarQube Scanner
-        uses: SonarSource/sonarcloud-github-action@v2
-        with:
-          projectBaseDir: .
-          env:
-            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        uses: sonarsource/sonarqube-scan-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}  # analysis token associated to your project
+          SONAR_HOST_URL: ${{ secrets.SONAR_URL }}
 
       # Rodar a análise do SonarQube
       - name: Run SonarQube analysis
