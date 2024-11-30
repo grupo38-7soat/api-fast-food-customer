@@ -164,8 +164,3 @@ jobs:
         run: |
           kubectl apply -f k8s/deployment-final.yaml
           kubectl apply -f k8s/service-final.yaml
-
-      # Etapa 8: Verificar o status do Deployment
-      - name: Verify Deployment
-        run: |
-          kubectl get all
