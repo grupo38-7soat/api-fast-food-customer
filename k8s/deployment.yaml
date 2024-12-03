@@ -20,7 +20,7 @@ spec:
                   - key: role
                     operator: In
                     values:
-                      - app-nodes  # Nome do label do node
+                      - app  # Nome do label do node
       containers:
       - name: ${REPO_NAME}
         image: ${ECR_REGISTRY}/${REPO_NAME}:latest
