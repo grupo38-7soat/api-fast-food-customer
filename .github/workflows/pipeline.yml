@@ -2,7 +2,6 @@ on:
   push:
     branches:
       - main
-      - release
 
 env:
   CLUSTER_NAME: "infra-tech-challenge"  # Nome do cluster EKS
@@ -158,12 +157,12 @@ jobs:
       - name: Substitute variables in deployment.yaml
         run: |
           envsubst < k8s/deployment.yaml > k8s/deployment-final.yaml
-          cat k8s/deployment-final.yaml
+#          cat k8s/deployment-final.yaml
 
       - name: Substitute variables in service.yaml
         run: |
           envsubst < k8s/service.yaml > k8s/service-final.yaml
-          cat k8s/service-final.yaml
+#          cat k8s/service-final.yaml
 
       # Etapa 7: Aplicar Kubernetes manifests
       - name: Apply Kubernetes manifests
