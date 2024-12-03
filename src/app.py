@@ -1,10 +1,10 @@
+import sys
 from loguru import logger
-from logger_serialize import serialize
 from services.expose_api_service import ApiService
-
+from config import Config
 
 logger.remove(0)
-logger.add(serialize)
+logger.add(sys.stdout)
 
 if __name__ == '__main__':
     logger.info('start aplication')

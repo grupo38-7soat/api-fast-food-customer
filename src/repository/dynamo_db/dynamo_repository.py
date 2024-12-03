@@ -1,3 +1,4 @@
+import os
 import boto3
 from loguru import logger
 from botocore.exceptions import ClientError
@@ -7,7 +8,11 @@ class DynamoRepository:
     def __init__(self, region_name=None, table_name=None):
         self.region_name = region_name
         self.table_name = table_name
-        self.dynamodb = boto3.resource('dynamodb', region_name=self.region_name)
+        self.dynamodb = boto3.resource('dynamodb',
+                                       region_name=self.region_name,
+                                       aws_access_key_id=os.getenv('ACCESS_KEY'),
+                                       aws_secret_access_key=os.getenv('SECRET_KEY')
+                                       )
         self.table = self.dynamodb.Table(self.table_name)
 
     def create_item(self, cpf, email, nome):

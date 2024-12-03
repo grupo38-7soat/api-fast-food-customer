@@ -17,7 +17,6 @@ item_model = dynamo_ns.model('Item', {
 })
 
 def get_dynamo_repository():
-    print(AWS_REGION, DYNAMO_TABLE_NAME)
     return DynamoRepository(region_name=AWS_REGION, table_name=DYNAMO_TABLE_NAME)
 
 @dynamo_ns.route('/create')
