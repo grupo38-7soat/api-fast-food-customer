@@ -2,13 +2,11 @@ import boto3
 from loguru import logger
 from botocore.exceptions import ClientError
 
-from config import Config
-
 
 class DynamoRepository:
-    def __init__(self):
-        self.region_name = Config.get('awsRegion')
-        self.table_name = Config.get('dynamoTableName')
+    def __init__(self, region_name=None, table_name=None):
+        self.region_name = region_name
+        self.table_name = table_name
         self.dynamodb = boto3.resource('dynamodb', region_name=self.region_name)
         self.table = self.dynamodb.Table(self.table_name)
 

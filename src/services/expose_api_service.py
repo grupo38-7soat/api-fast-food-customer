@@ -3,7 +3,7 @@ from loguru import logger
 from waitress import serve
 from flask_restx import Api
 
-from services.resources.api_resources import crud_ns
+from services.resources.api_resources import dynamo_ns
 
 app = Flask(__name__)
 
@@ -20,6 +20,6 @@ class ApiService(object):
                        doc='/swagger/')
 
     def run(self):
-        self.api.add_namespace(crud_ns)
+        self.api.add_namespace(dynamo_ns)
         logger.info('Serving on http://{}:{}'.format(self.HOST, self.PORT))
         serve(app, host=self.HOST, port=self.PORT)
