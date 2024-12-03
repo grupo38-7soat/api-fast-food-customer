@@ -40,9 +40,6 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}  # analysis token associated to your project
           SONAR_HOST_URL: ${{ secrets.SONAR_URL }}
 
-      - name: Esperar 15 segundos para o scanner do SonarQube
-        run: sleep 15
-
       # Aguardar o resultado da análise e obter o status da qualidade
       - name: Check SonarQube quality gate status
         run: |
