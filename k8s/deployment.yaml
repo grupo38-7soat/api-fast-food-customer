@@ -12,6 +12,15 @@ spec:
       labels:
         app: ${REPO_NAME}
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: role
+                    operator: In
+                    values:
+                      - app-nodes  # Nome do label do node
       containers:
       - name: ${REPO_NAME}
         image: ${ECR_REGISTRY}/${REPO_NAME}:latest
