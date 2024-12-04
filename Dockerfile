@@ -6,7 +6,11 @@ WORKDIR /app
 
 # Copie o arquivo de requisitos e instale as dependências
 COPY requirements.txt .
+
 RUN pip install --no-cache-dir -r requirements.txt
+
+# Copie o arquivo application.env
+COPY src/application.env .
 
 # Copie o restante do código da aplicação
 COPY . .
