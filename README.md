@@ -1,17 +1,21 @@
 # API Fast Food Customer
 
-Este é um projeto de aplicação desenvolvido em Python 3.12. Ele utiliza a biblioteca `loguru` para logging e inclui testes unitários com `pytest` e `pytest-cov`.
+Este é um projeto de aplicação desenvolvido em Python 3.12. 
 
 ## Objetivo
 
 Esta aplicação tem como objetivo cadastrar os usuários da aplicação dentro de um DynamoDB da AWS, realizando operações de CRUD (Create, Read, Update, Delete).
+A aplicação possui um Swagger disponível na porta 3000. Para acessar, basta rodar o código e acessar de forma local http://localhost:3000/swagger/ ou em caso produtivo http://{HOST}:3000/swagger/.
 
-## Requisitos
+![Logo da Aplicação](images/swagger.png)
+
+##  Executando a Aplicação
+#### Requisitos
 
 - Python 3.12
 - pip
 
-## Instalação
+#### Instalação
 
 Para instalar as dependências necessárias, execute o seguinte comando apontando para o arquivo `requirements.txt`:
 
@@ -19,40 +23,47 @@ Para instalar as dependências necessárias, execute o seguinte comando apontand
 pip install -r requirements.txt
 ````    
 
-##  Executando a Aplicação
+####  Execução
 Para executar a aplicação, utilize o comando:
 ```bash
 python src/app.py
-````    
-
-A aplicação possui um Swagger disponível na porta 3000. Para acessar, basta rodar o código e acessar http://localhost:3000/swagger/.
-
+````
 
 ##  Testes Unitários
-Para rodar os testes unitarios é preciso ter o pytest e pytest-cov instalados, caso não tenha, pode instalar com o comando abaixo
+Está aplicação também conta com testes unitarios, que estão localizados na pasta tests. Vale ressaltar que os testes unitarios estão utilizando o pytest e pytest-cov para analisar a cobertura de codigo, e por conta disso, para rodar os testes unitarios é necessario instalar as dependencias abaixo:
 ````    
 pip install pytest
 pip install pytest-cov
 ````
 
-Para Analisar o codigo local e verificar a porcentagem de cobertura em cada arquivo, pode rodar o comando abaixo
+Para Analisar o codigo local e verificar a porcentagem de cobertura em cada arquivo, pode rodar o comando abaixo:
 ````
 coverage3 run -m pytest -v --cov=. 
 ````
 
-Comando para rodar o covarage, geracao do arquivo covarerage.xml e o sonar-scanner
+Caso queria verificar os testes dentro do sonnar, basta rodar os comandos do covarage e da geracao do arquivo covarerage.xml e depois rodar o sonnar-scanner
 ````
 coverage3 run -m pytest -v --cov=. --cov-report xml:coverage.xml
 sonar-scanner
 ````
 
+![Logo da Aplicação](images/sonar.png)
+![Logo da Aplicação](images/sonar_code.png)
+
 ##  Integração e Deploy
-Esta aplicação conta com a integração do GitHub Actions, permitindo fazer o deploy da aplicação diretamente na AWS, utilizando os arquivos Kubernetes presentes na pasta eks. Para subir a imagem, estamos utilizando o AWS ECR.
+Para realizar o deploy desta aplicação, foi utilizado  a integração do GitHub Actions, permitindo fazer o deploy diretamente na AWS, utilizando os arquivos Kubernetes presentes na pasta K8S. Para subir a imagem em ambiente produtivo, estamos utilizando o AWS ECR.
+Git Actions:
+![Logo da Aplicação](images/git_action.png)
 
+AWS ECR:
+![Logo da Aplicação](images/ecr.png)
 
-Caso alguma alteração no projeto seja feita, é de estrema importancia atualizar as dependencias do projeto, e para isso pode usar o seguinte comando
+## Demonstração
+Na imagem abaixo, é possivel ver a aplicação rodando em um ambiente produtivo, realizando o cadastro de um novo usuario.
+![Logo da Aplicação](images/swagger_com_teste.png)
+![Logo da Aplicação](images/dynamo.png)
+
+OBS: Caso alguma alteração no projeto seja feita, é de estrema importancia atualizar as dependencias do projeto, e para isso pode usar o seguinte comando
 ````
 pip freeze > requirements.txt
 ````
-
-
